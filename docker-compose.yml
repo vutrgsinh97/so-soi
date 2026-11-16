@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:16
+    container_name: my-postgres
+    restart: always
+    env_file: 
+     - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: mydb_sosoi
+    ports:
+      - "${DB_HOST}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
