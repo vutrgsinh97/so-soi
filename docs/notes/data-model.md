@@ -45,7 +45,7 @@ erDiagram
         string eat "NOT NULL"
         string drink "NOT NULL"
         string short_description
-        string feeling "NOT NULL"
+        int feeling "NOT NULL"
         date day
         int version
         

@@ -73,7 +73,7 @@ Docs:
 
 #### Ngày 1: Khởi tạo
 
-- [ ] `git init` ngay từ đầu, commit đầu tiên chỉ có project rỗng
+- [x] `git init` ngay từ đầu, commit đầu tiên chỉ có project rỗng
 - [x] Tạo project trên start.spring.io (Java 21, Maven, Spring Web, Spring Data JPA, PostgreSQL Driver, Validation)
 - [x] Chạy Postgres bằng `docker-compose.yml` (chưa có app), có **volume** để tắt container không mất dữ liệu
 - [x] Vào `psql` bằng `docker compose exec`, gõ `\l`, `\dt` cho quen
@@ -89,11 +89,11 @@ Docs:
 
 #### Ngày 2: Entity Account, Profile, Ticket
 
-- [ ] Entity `Account`, `Profile`, `Ticket` theo sơ đồ Ngày 0 (chưa có `Tag`), cùng Repository
-- [ ] `Profile` → `Account` và `Ticket` → `Profile` bằng `@ManyToOne`, bên giữ FK là bên "nhiều"
-- [ ] `created_at`, `updated_at` tự gán khi lưu và khi sửa
+- [x] Entity `Account`, `Profile`, `Ticket` theo sơ đồ Ngày 0 (chưa có `Tag`), cùng Repository
+- [x] `Profile` → `Account` và `Ticket` → `Profile` bằng `@ManyToOne`, bên giữ FK là bên "nhiều"
+- [x] `created_at`, `updated_at` tự gán khi lưu và khi sửa
 - [ ] Chưa có đăng ký: tự `INSERT` một account và một profile bằng tay trong `psql` để có `profile_id` mà dùng
-- [ ] Trước khi code: chốt `feeling` là chữ hay số 1 tới 5. Sơ đồ đang là `string`, yêu cầu ghi 1 tới 5; Ngày 4, 6, 9 cần số
+- [x] Trước khi code: chốt `feeling` là chữ hay số 1 tới 5. Sơ đồ đang là `string`, yêu cầu ghi 1 tới 5; Ngày 4, 6, 9 cần số
 
 Docs:
 
