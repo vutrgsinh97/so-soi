@@ -1,9 +1,11 @@
 package com.example.sosoi.dto.request;
 
+import java.time.LocalDate;
+
 public record CreateTicketRequest(
-    String title,
-    String description,
+    String shortDescription,
     String eat,
     String drink,
-    Short feeling) {
+    Short feeling,
+    LocalDate day) {
 }
