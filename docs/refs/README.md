@@ -7,7 +7,7 @@ Kiến thức tra cứu, do Claude soạn. Anh đọc, không cần sửa.
 | [00-data-modeling.md](00-data-modeling.md) | Thiết kế dữ liệu, kiểu dữ liệu, constraint, ERD Mermaid | Ngày 0 |
 | [01-spring-boot-basics.md](01-spring-boot-basics.md) | Spring Boot chạy thế nào, Lombok, Maven | Ngày 1 |
 | [02-jpa-persistence.md](02-jpa-persistence.md) | JPA, Entity, Repository, timestamp, `@Version`, unique tổ hợp | Ngày 2, 5 |
-| [03-layers-dto.md](03-layers-dto.md) | Controller/Service/Repository, DTO, REST | Ngày 3 |
+| [03-layers-dto.md](03-layers-dto.md) | Controller/Service/Repository, DTO, REST, tự hỏi trước khi làm endpoint | Ngày 3 |
 | [04-validation-errors.md](04-validation-errors.md) | Validation, `@RestControllerAdvice` | Ngày 4 |
 | [05-pagination-relations.md](05-pagination-relations.md) | Phân trang, quan hệ bảng, N+1 | Ngày 6, 8 |
 | [06-security-jwt.md](06-security-jwt.md) | Spring Security, BCrypt, JWT, phân quyền | Ngày 10, 11 |

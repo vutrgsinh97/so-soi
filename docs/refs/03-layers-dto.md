@@ -29,3 +29,16 @@ Thường có 2 loại: `TicketRequest` (dữ liệu client gửi lên) và `Tic
 - `DELETE /tickets/{id}`: xoá, trả 204.
 
 Docs: [Building REST services with Spring](https://spring.io/guides/tutorials/rest/) · [Entity vs DTO](https://www.baeldung.com/java-entity-vs-dto).
+
+## 4. Tự hỏi trước khi làm endpoint
+
+Chọn cái nào trước:
+1. Cái nào **tạo** dữ liệu, cái nào **cần** dữ liệu có sẵn? Làm cái tạo trước.
+2. Làm xong kiểm bằng gì (`curl`, `psql`)? Chưa trả lời được thì chưa phải bước tiếp theo.
+3. Bước nhỏ nhất chạy được: đi trọn một đường request → DB → response, không làm rộng cả một tầng.
+
+Làm một endpoint:
+4. Vào là gì, ra là gì: method, URL, body, status trả về.
+5. Mỗi field của Entity do ai lo: client gửi, server tự tính, hay DB/Hibernate tự sinh?
+6. Mỗi tầng đổi dữ liệu thế nào: DTO → Entity → lưu → Entity → Response DTO.
+7. Cái gì có thể sai (không thấy, trùng, sai dữ liệu)? Ghi ra trước, xử lý sau.

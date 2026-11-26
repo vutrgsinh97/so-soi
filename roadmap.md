@@ -18,7 +18,7 @@ App nhật ký nhỏ: mỗi ngày một **tờ** (ăn gì, uống gì, tâm tr�
 
 Mục tiêu: đọc hiểu file của thợ, và tự viết handoff cho thợ đọc.
 
-- **Cuối mỗi buổi**: viết `docs/notes/YYYY-MM-DD.md` bằng **tiếng Anh**, tối đa 10 dòng, đúng 3 mục: `## Done`, `## Next`, `## Stuck`. Đây là handoff cho chính mình buổi sau.
+- **Cuối mỗi buổi**: thêm một mục vào `docs/notes/log.md` (một file chung, **mới nhất ở trên cùng**), bằng **tiếng Anh**, tối đa 10 dòng: `## YYYY-MM-DD`, bên dưới đúng 3 mục `### Done`, `### Next`, `### Stuck`. Đây là handoff cho chính mình buổi sau.
 - **Cuối mỗi tuần** (ngày 7, 14): viết `docs/notes/handoff-week-N.md` bằng tiếng Anh, như thể giao project cho một người lạ: đang ở đâu, chạy thế nào, còn gì dở, cần quyết gì.
 - **Mỗi tuần một lần**: lấy một file report thật của thợ, đọc, rồi tóm lại 5 dòng bằng lời của mình. Gia sư so với bản gốc.
 - Markdown học dần qua chính mấy file này: heading, list, bảng, code block, link, `<details>`, Mermaid.

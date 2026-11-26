@@ -69,3 +69,28 @@ Ký hiệu: ✅ đã sửa · ⏳ chưa sửa
 - **Lỗi**: [GreetingController.java:7](../../sosoi/src/main/java/com/example/sosoi/GreetingController.java#L7) tên là `Greeting` (chép từ guide) nhưng chỉ làm `/ping`.
 - **Vì sao không nên**: người đọc (hay thợ) tìm chỗ xử lý `/ping` sẽ không nghĩ tới `Greeting`. Giống dán nhãn "muối" lên hũ đường.
 - **Cách thay thế**: `PingController` hoặc `HealthController`. Nhớ đổi cả tên file.
+
+## English
+
+### 7. ⏳ Mục `Done` dùng động từ nguyên mẫu, chưa chia quá khứ
+
+- **Lỗi**: [log.md:10](../notes/log.md#L10) `insert data ... and use returning`.
+- **Vì sao không nên**: `Done` kể việc đã xong, nên động từ phải ở past simple. Nếu để nguyên mẫu, câu đọc ra giống một mệnh lệnh ("hãy insert"), người đọc dễ hiểu nhầm là việc còn phải làm. Giống tờ giấy dán tủ lạnh ghi "mua sữa": không biết là đã mua hay còn phải mua.
+- **Cách thay thế**: `Inserted ... with psql and used RETURNING`. Dùng `with psql`, không dùng `by psql`.
+
+| Mục | Dạng động từ |
+| --- | --- |
+| `Done` | past simple: `Inserted`, `Learned` |
+| `Next` | nguyên mẫu (mệnh lệnh): `Write`, `Add` |
+
+### 8. ⏳ Tự ghép tiền tố phủ định cho từ không có dạng đó
+
+- **Lỗi**: [log.md:14-15](../notes/log.md#L14-L15) dùng `unknow`, `un-catch`.
+- **Vì sao không nên**: tiếng Anh không cho gắn `un-` vào động từ nào cũng được. `unknow` là sai chính tả (chỉ có tính từ `unknown`), còn `un-catch` không phải là một từ. Giống tự chế từ "bất ăn" thay cho "không ăn".
+- **Cách thay thế**: muốn phủ định một hành động thì dùng `don't` / `didn't`: `I don't know ...`, `I didn't get ...`. Hoặc dùng tính từ có sẵn: `... is still unclear to me`.
+
+### 9. ⏳ Danh từ đếm được sau số nhiều chưa thêm `-s`
+
+- **Lỗi**: [log.md:12](../notes/log.md#L12) `5 api`.
+- **Vì sao không nên**: sau số lớn hơn 1 thì danh từ phải ở số nhiều. Viết tắt cũng vậy: `APIs`. Giống ghi "5 quả táo" mà lại vẽ ra có một quả.
+- **Cách thay thế**: `5 endpoints` hoặc `5 APIs`. Với Ngày 3 thì `endpoints` chính xác hơn, vì cả 5 cái đều thuộc một API `/tickets`.
