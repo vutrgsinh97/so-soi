@@ -13,7 +13,6 @@ public record TicketResponse(
     LocalDate day,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    UUID profileId
-
-) {
+    UUID profileId,
+    Integer version) {
 }
