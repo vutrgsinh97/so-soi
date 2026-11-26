@@ -36,7 +36,7 @@ Ký hiệu: ✅ đã sửa · ⏳ chưa sửa
 ### 4. ✅ Cổng Postgres mở cho mọi mạng
 
 - **Lỗi**: [docker-compose.yml:11](../../docker/docker-compose.yml#L11) `"5432:5432"` mở cổng trên mọi card mạng của máy, kể cả wifi quán cà phê.
-- **Vì sao không nên**: người cùng mạng gõ đúng IP máy Lang là thử đăng nhập được, mà mật khẩu đang là `admin`. Giống để cửa nhà mở ra hẻm chứ không chỉ ra phòng khách.
+- **Vì sao không nên**: người cùng mạng gõ đúng IP máy anh là thử đăng nhập được, mà mật khẩu đang là `admin`. Giống để cửa nhà mở ra hẻm chứ không chỉ ra phòng khách.
 - **Cách thay thế**: `"127.0.0.1:5432:5432"`, chỉ máy mình gọi được.
 - Docs: [Compose: ports](https://docs.docker.com/reference/compose-file/services/#ports)
 

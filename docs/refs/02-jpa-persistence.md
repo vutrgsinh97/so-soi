@@ -1,7 +1,25 @@
-# Spring Boot — Day 02: Persistence Layer
+# JPA, Entity, Repository và persistence
 
-> Ghi chú học Backend · Dự án Sosoi · 16/11/2026  
-> Java 21 · Spring Boot · Maven · Spring Data JPA · Hibernate · PostgreSQL · Lombok
+Dùng cho: Ngày 2 (Entity, Repository), Ngày 5 (unique, `@Version`).
+
+> Đánh số mục giữ theo bài gốc nên có chỗ nhảy số: mục 3 (Lombok, Maven) nằm ở `01-spring-boot-basics.md`, mục 9 (code mẫu) nằm ở phụ lục cuối file.
+
+## Tóm tắt khái niệm
+
+**JPA** là cách làm việc với database bằng object Java thay vì viết SQL bằng tay. **Hibernate** là thư viện thực hiện JPA phía dưới.
+
+- **Entity** (`@Entity`) = một class Java tương ứng với một bảng. Mỗi object là một dòng, mỗi field là một cột. Ví dụ `Ticket` là bảng `ticket`.
+- `@Id` đánh dấu khoá chính, `@GeneratedValue` để sinh id. Sổ Sói dùng UUID.
+- Entity cần một constructor rỗng, vì JPA dùng nó để tạo object khi đọc dữ liệu ra.
+- **Repository**: chỉ khai báo interface `extends JpaRepository<Ticket, UUID>`. Spring **tự sinh code** cho `save`, `findById`, `findAll`, `deleteById`.
+- **Query method**: đặt tên hàm theo quy tắc, ví dụ `findByProfileId(...)`, Spring tự hiểu và tạo câu SQL.
+- Chạy Postgres bằng Docker giúp không phải cài database vào máy. Ba biến quan trọng: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`.
+
+Ví dụ nhanh bằng `docker run` (Sổ Sói dùng `docker compose` có volume, xem Ngày 1 trong roadmap):
+
+```bash
+docker run -d --name sosoi-db -p 5432:5432 -e POSTGRES_USER=dev -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=sosoi postgres:16
+```
 
 ## 0. Mục tiêu và phạm vi
 
@@ -99,90 +117,6 @@ com/example/sosoi/
 Package by Layer nhóm theo trách nhiệm kỹ thuật; Package by Feature nhóm theo nghiệp vụ. Spring Boot không bắt buộc một cấu trúc cố định. Nên đặt main class có `@SpringBootApplication` ở package gốc, bên trên các Entity và Repository để thuận tiện cho việc tự động scan.
 
 Docs: [Spring Boot — Structuring Your Code](https://docs.spring.io/spring-boot/reference/using/structuring-your-code.html).
-
-## 3. Lombok và Maven
-
-Lombok giảm boilerplate code bằng cách xử lý annotation trong quá trình biên dịch.
-
-| Annotation | Chức năng | Khi dùng với Entity |
-|---|---|---|
-| `@Getter` | Sinh getter | Nên dùng. |
-| `@Setter` | Sinh setter | Dùng chọn lọc, tránh cho phép sửa ID/version/timestamp tùy ý. |
-| `@NoArgsConstructor` | Constructor không tham số | JPA cần constructor không tham số, `public` hoặc `protected`. |
-| `@AllArgsConstructor` | Constructor cho tất cả field | Không bắt buộc; có thể đưa cả field tự sinh vào constructor. |
-| `@Builder` | Khởi tạo theo Builder Pattern | Tùy nhu cầu; vẫn bảo đảm constructor JPA. |
-| `@ToString` | Sinh `toString()` | Cẩn thận với quan hệ, lazy loading và dữ liệu nhạy cảm. |
-| `@Data` | Getter, setter, equals/hashCode, toString… | Không nên dùng mặc định cho Entity. |
-
-Tên đúng là `@AllArgsConstructor`, không phải `@AllArgument`.
-
-### Thêm dependency trong pom.xml
-
-Chèn bên trong `<dependencies>` đang có (không tạo một block `<dependencies>` thứ hai):
-
-```xml
-<dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    <scope>provided</scope>
-</dependency>
-```
-
-Project hiện có `spring-boot-starter-parent` và `<java.version>21</java.version>`. Nếu parent quản lý phiên bản Lombok thì không cần khai báo `<version>`. Kiểm tra phiên bản thực tế bằng Maven thay vì giả định số phiên bản:
-
-```bash
-./mvnw dependency:tree -Dincludes=org.projectlombok:lombok
-./mvnw -v
-```
-
-`provided`: thư viện có trên compile/test classpath, không thuộc runtime classpath thông thường của Maven. Lombok chủ yếu thực hiện công việc lúc compile.
-
-### Vì sao đôi khi cần cấu hình build?
-
-- `dependencies`: Project cần thư viện nào?
-- `build/plugins`: Project được biên dịch, kiểm thử, đóng gói như thế nào?
-- `annotationProcessorPaths`: Java Compiler tìm annotation processor ở đâu?
-
-Với JDK 21, project không dùng `module-info.java` và annotation processing không bị vô hiệu hóa, thông thường chỉ cần dependency. Từ JDK 23, hoặc khi compile theo Java modules từ JDK 9, cần kích hoạt/cấu hình processor tường minh theo hướng dẫn Lombok. `<java.version>21</java.version>` không đảm bảo Maven thật sự chạy trên JDK 21, vì vậy kiểm tra `./mvnw -v`.
-
-Nếu cần, thêm plugin này vào `<build><plugins>` hiện có, giữ nguyên `spring-boot-maven-plugin`:
-
-```xml
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <configuration>
-        <annotationProcessorPaths>
-            <path>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-            </path>
-        </annotationProcessorPaths>
-    </configuration>
-</plugin>
-```
-
-Nếu không có dependency management phù hợp thì khai báo version tương ứng ở dependency và processor path. Khi project có thêm processor (ví dụ MapStruct), nhớ giữ cả các processor cần thiết trong cấu hình.
-
-### VSCode không suggest Lombok
-
-1. Cài Extension Pack for Java / Language Support for Java by Red Hat.
-2. Mở đúng thư mục chứa `pom.xml`; đợi Java import Maven project.
-3. Chạy `./mvnw clean compile` và kiểm tra lỗi.
-4. Mở Command Palette (`Cmd + Shift + P`) → thử `Java: Reload Projects` (nếu có).
-5. Nếu chưa được: `Java: Clean Java Language Server Workspace` → khởi động lại.
-6. Kiểm tra settings:
-
-```json
-{
-  "java.jdt.ls.lombokSupport.enabled": true,
-  "java.configuration.updateBuildConfiguration": "automatic"
-}
-```
-
-Nếu Maven compile thành công nhưng IDE vẫn báo lỗi, khả năng cao là vấn đề import project/Java Language Server. Nếu compile lỗi, xử lý dependency hoặc processor trước. VSCode Java đã tích hợp hỗ trợ Lombok, thông thường không cần extension Lombok riêng.
-
-Docs: [Lombok — Maven Setup](https://projectlombok.org/setup/maven) · [Lombok Features](https://projectlombok.org/features/) · [Java Extension by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java).
 
 ## 4. ERD và quan hệ Entity
 
@@ -548,6 +482,263 @@ Nếu database đã từng được sinh với hai UNIQUE đơn lẻ, kiểm tra
 
 Docs: [Jakarta Persistence — UniqueConstraint](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/uniqueconstraint) · [PostgreSQL Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html).
 
+## 10. Hibernate có tự chuyển Entity thành SQL không?
+
+Hibernate đọc metadata JPA và có thể tạo ra DDL tương ứng, tùy cấu hình schema generation. Spring Boot cung cấp auto-configuration và property điều khiển Hibernate.
+
+| Annotation | Ý nghĩa khi tạo schema hoặc ghi dữ liệu |
+|---|---|
+| `@Entity`, `@Table` | Ánh xạ class sang bảng. |
+| `@Id` | Khóa chính. |
+| `@GeneratedValue` | Chiến lược sinh ID; không nhất thiết có DB DEFAULT. |
+| `@Column(nullable = false)` | NOT NULL. |
+| `@Column(unique = true)` | UNIQUE. |
+| `@ManyToOne`, `@JoinColumn` | FK trong trường hợp ánh xạ trên. |
+| `@UniqueConstraint` | UNIQUE trên tổ hợp các cột. |
+| `@Version` | Cột version; Hibernate dùng khi ghi để kiểm tra xung đột. |
+| `@CreationTimestamp`, `@UpdateTimestamp` | Hibernate gán timestamp khi ghi; không mặc nhiên tạo DB trigger. |
+
+### Cấu hình database dành cho môi trường học
+
+`src/main/resources/application.properties` (ví dụ, sửa tên database và biến môi trường theo máy đang dùng):
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/sosoi
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+```
+
+Database `sosoi` phải tồn tại trước, PostgreSQL phải đang chạy và thông tin đăng nhập hợp lệ. Hibernate có thể sinh bảng nhưng cấu hình này không tự tạo PostgreSQL database mới. Không commit password thật. Nếu project dùng YAML, chuyển sang định dạng tương đương và tránh cấu hình trùng.
+
+| `ddl-auto` | Hành vi |
+|---|---|
+| `none` | Không quản lý schema. |
+| `validate` | Kiểm tra mapping/schema; không sửa schema, không thay thế kiểm tra đầy đủ mọi constraint. |
+| `update` | Cố gắng cập nhật schema, không phải công cụ migration hoàn chỉnh. |
+| `create` | Xóa/tạo lại schema do Hibernate quản lý lúc khởi động; mất dữ liệu cũ. |
+| `create-drop` | Tương tự create, còn xóa schema khi đóng ứng dụng. |
+
+PostgreSQL là database không nhúng; mặc định Spring Boot thường dùng `none` nếu không chỉ định. `update` phù hợp cho học tập local, không dùng cho database quan trọng. Khi làm production, quản lý schema bằng Flyway/Liquibase; thường kết hợp Hibernate `validate` hoặc `none`, tùy quy trình triển khai.
+
+### SQL minh họa tương đương
+
+Không cần chạy đoạn dưới nếu Hibernate đang được giao nhiệm vụ tạo schema; đây là mô hình DDL để đọc hiểu. Tên constraint, kiểu dữ liệu và thứ tự lệnh thực tế có thể khác theo version và cấu hình. Ví dụ không bao gồm Tag/TagTicket.
+
+```sql
+CREATE TABLE account (
+    id uuid PRIMARY KEY,
+    username varchar(255) NOT NULL UNIQUE,
+    password_hash varchar(255) NOT NULL
+);
+
+CREATE TABLE profile (
+    id uuid PRIMARY KEY,
+    account_id uuid NOT NULL REFERENCES account(id),
+    first_name varchar(255),
+    last_name varchar(255)
+);
+
+CREATE TABLE ticket (
+    id uuid PRIMARY KEY,
+    profile_id uuid NOT NULL REFERENCES profile(id),
+    eat varchar(255) NOT NULL,
+    drink varchar(255) NOT NULL,
+    short_description varchar(255),
+    feeling smallint NOT NULL,
+    day date NOT NULL,
+    version integer,
+    created_at timestamptz NOT NULL,
+    updated_at timestamptz NOT NULL,
+    CONSTRAINT uk_ticket_profile_day UNIQUE (profile_id, day)
+);
+```
+
+`@Min`/`@Max` được Bean Validation kiểm tra; một số tích hợp có thể bổ sung CHECK lúc sinh schema. Nếu cần đảm bảo phạm vi ngay cả khi dùng SQL trực tiếp, khai báo CHECK một cách tường minh trong migration (`CHECK (feeling BETWEEN 0 AND 5)`). Tương tự, `NOT NULL` không tự ngăn chuỗi rỗng. Không giả định annotation đã xuất hiện trong database nếu chưa kiểm tra schema.
+
+**Keywords:** DDL, DML, Automatic Schema Generation, Database Migration, Flyway, Liquibase, SQL Constraints.
+
+Docs: [Spring Boot — Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html).
+
+## 11. Ví dụ thực tế: một ngày sử dụng Sosoi
+
+### Tình huống
+
+Một Account có 2 Profile: Sói và Sakura. Sói tạo nhật ký ngày 16/11/2026:
+
+```json
+{
+  "day": "2026-11-16",
+  "eat": "Cơm gà",
+  "drink": "Trà hoa nhài",
+  "shortDescription": "Hôm nay học Spring Boot",
+  "feeling": 4
+}
+```
+
+Đây là ví dụ JSON request của API sẽ phát triển sau, chưa phải endpoint đang hoạt động. Profile mục tiêu lấy từ ID đã xác thực/quyền truy cập ở server hoặc URL phù hợp.
+
+### Mô phỏng luồng tạo nhật ký bằng Repository
+
+Đoạn sau là mẫu đặt trong một phương thức service/test, đã được inject các repository. Nó không phải class độc lập hoàn chỉnh. Biến `profileId` là UUID của Profile đã tồn tại.
+
+```java
+Profile profile = profileRepository.findById(profileId).orElseThrow();
+
+Ticket ticket = new Ticket(
+    profile,
+    LocalDate.of(2026, 11, 16),
+    "Cơm gà",
+    "Trà hoa nhài",
+    "Hôm nay học Spring Boot",
+    (short) 4
+);
+
+Ticket saved = ticketRepository.saveAndFlush(ticket);
+UUID ticketId = saved.getId();
+```
+
+Khi INSERT, Hibernate sinh UUID, version ban đầu (thường là 0 với mapping số này) và timestamp; PostgreSQL kiểm tra FK, UNIQUE, NOT NULL. `saveAndFlush` được dùng để dễ quan sát SQL trong bài học; không cần gọi cho mọi thao tác trong ứng dụng thật.
+
+### Khi sửa nhật ký
+
+Ví dụ logic cho Service ở ngày tiếp theo (minh họa, chưa xử lý HTTP và xác thực):
+
+```java
+@Transactional
+public void updateFeeling(UUID ticketId, Integer expectedVersion, Short feeling) {
+    Ticket ticket = ticketRepository.findById(ticketId).orElseThrow();
+
+    if (!Objects.equals(ticket.getVersion(), expectedVersion)) {
+        throw new OptimisticLockingFailureException("Ticket đã được cập nhật");
+    }
+
+    ticket.setFeeling(feeling);
+    // Managed Entity: Hibernate dirty checking và flush khi cần.
+    // @Version sẽ kiểm tra tiếp xung đột tại lúc UPDATE.
+}
+```
+
+Imports cần cho snippet: `java.util.Objects`, `java.util.UUID`, `org.springframework.transaction.annotation.Transactional`, `org.springframework.dao.OptimisticLockingFailureException` và `Ticket`. Trong ứng dụng thật, service phải xác minh Account hiện tại có quyền truy cập Ticket; response có thể trả lại version mới sau khi ghi. Không bắt exception rồi tiếp tục dùng cùng transaction đã lỗi.
+
+### Kết quả minh họa (hai thao tác cách nhau 5 phút)
+
+| Field | Sau khi tạo | Sau khi sửa |
+|---|---|---|
+| `id` | T01 | T01 |
+| `profile_id` | P01 | P01 |
+| `day` | 2026-11-16 | 2026-11-16 |
+| `feeling` | 4 | 5 |
+| `version` | 0 | 1 |
+| `created_at` | 2026-11-16T10:00:00Z | 2026-11-16T10:00:00Z |
+| `updated_at` | 2026-11-16T10:00:00Z | 2026-11-16T10:05:00Z |
+
+ID được viết ngắn và timestamp là giá trị giả định để dễ hình dung; không phải kết quả test thực tế.
+
+Nếu Sói bấm tạo lần thứ hai trong cùng ngày: UNIQUE tổ hợp chặn. Nếu Sakura tạo cùng ngày: hợp lệ vì khác Profile. Nếu hai thiết bị cùng sửa T01 với version 0: chỉ một thao tác ghi dựa trên version 0 thành công; thao tác còn lại phải xử lý conflict.
+
+### Hình dung kiến trúc API khi phát triển tiếp
+
+```mermaid
+flowchart LR
+    A[Frontend] --> B[TicketController]
+    B --> C[TicketService]
+    C --> D[TicketRepository]
+    D --> E[Hibernate]
+    E --> F[(PostgreSQL)]
+```
+
+Controller nhận DTO, validate request; Service kiểm tra quyền, nghiệp vụ và quản lý transaction; Repository thao tác dữ liệu; database bảo vệ constraint. Không gửi `passwordHash` hoặc cả cây Entity trực tiếp ra API.
+
+## 12. Tự kiểm tra Ngày 2
+
+### Chạy ứng dụng
+
+```bash
+./mvnw -v
+./mvnw clean compile
+./mvnw spring-boot:run
+```
+
+Sau khi kết nối PostgreSQL thành công, mở DBeaver và refresh schema. Có thể kiểm tra constraint của 3 bảng bằng truy vấn sau (giả định schema `public`):
+
+```sql
+SELECT conrelid::regclass AS table_name,
+       conname AS constraint_name,
+       pg_get_constraintdef(oid) AS definition
+FROM pg_constraint
+WHERE conrelid IN (
+    'public.account'::regclass,
+    'public.profile'::regclass,
+    'public.ticket'::regclass
+)
+ORDER BY table_name, constraint_name;
+```
+
+Truy vấn đọc dữ liệu Ticket sau khi có bản ghi:
+
+```sql
+SELECT id, profile_id, day, feeling, version, created_at, updated_at
+FROM ticket
+ORDER BY created_at DESC;
+```
+
+### Các bài kiểm tra cần thực hiện
+
+| Test case | Kết quả mong đợi |
+|---|---|
+| Tạo Account với username hợp lệ (hash mật khẩu đã được tạo) | Thành công. |
+| Tạo Account khác trùng username | Database từ chối. |
+| Lưu Entity với username chỉ gồm khoảng trắng qua JPA validation | Bị từ chối. |
+| Tạo nhiều Profile cho cùng Account | Thành công. |
+| Tạo Profile thiếu Account | Bị từ chối. |
+| Cùng Profile, hai Ticket khác ngày | Thành công. |
+| Hai Profile, cùng ngày | Thành công. |
+| Cùng Profile và ngày | Database từ chối. |
+| `feeling = 6` qua JPA validation | Bị từ chối. |
+| Tạo Ticket | UUID, version và timestamp được sinh. |
+| Thay đổi Ticket, flush/commit và đọc lại | Version tăng, updatedAt thay đổi, createdAt giữ nguyên. |
+| Hai transaction độc lập cùng đọc rồi sửa một Ticket | Transaction cập nhật stale version bị lỗi. |
+| Hai transaction cùng tạo một Profile/ngày | Chỉ một bản ghi trùng tổ hợp có thể commit. |
+
+Để kiểm tra concurrency, cần hai transaction độc lập với thứ tự đọc/ghi được kiểm soát, không chỉ gọi `save()` hai lần tuần tự trong cùng transaction. Với tích hợp PostgreSQL, có thể học thêm Testcontainers ở ngày sau. `BUILD SUCCESS` chỉ chứng minh code đã compile; không chứng minh mọi quy tắc database đã đúng.
+
+## 13. Bảng tra cứu annotation nhanh
+
+| Nhóm | Annotation chính |
+|---|---|
+| Entity Mapping | `@Entity`, `@Table`, `@Id`, `@GeneratedValue`, `@Column` |
+| Entity Relationship | `@ManyToOne`, `@OneToMany`, `@JoinColumn` |
+| Bean Validation | `@NotBlank`, `@NotNull`, `@Size`, `@Min`, `@Max`, `@Pattern` |
+| Database Constraints | `@Column(unique = true)`, `@UniqueConstraint` |
+| Timestamp Generation | `@CreationTimestamp`, `@UpdateTimestamp` |
+| Lifecycle Callbacks | `@PrePersist`, `@PreUpdate` |
+| Auditing | `@CreatedDate`, `@LastModifiedDate`, `@CreatedBy`, `@LastModifiedBy` |
+| Optimistic Locking | `@Version` |
+| Reuse Mapping | `@MappedSuperclass` |
+| Lombok | `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor` |
+
+### Tài liệu tham khảo chính thức
+
+- [Spring Boot — Structuring Your Code](https://docs.spring.io/spring-boot/reference/using/structuring-your-code.html)
+- [Spring — Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+- [Spring Boot — Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
+- [Hibernate ORM — User Guide](https://docs.hibernate.org/stable/core/userguide/html_single/)
+- [Jakarta Persistence 3.2 — Specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html)
+- [Jakarta Validation — Constraints](https://jakarta.ee/specifications/platform/11/apidocs/jakarta.validation/constraints/package-summary)
+- [Spring Data JPA — Auditing](https://docs.spring.io/spring-data/jpa/reference/auditing.html)
+- [Lombok — Maven Setup](https://projectlombok.org/setup/maven)
+- [PostgreSQL — Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
+
+> Ghi nhớ: Entity mô tả dữ liệu; Repository cung cấp thao tác lưu trữ; Hibernate chuyển mapping và thao tác Entity thành SQL; PostgreSQL thực thi và bảo vệ tính toàn vẹn dữ liệu. Service sẽ là nơi xử lý nghiệp vụ của ứng dụng.
+
+## Phụ lục: code mẫu Ngày 2 (chờ quyết D2)
+
+> Code này do agent viết, chưa chạy thật. Chưa quyết giữ hay bỏ (D2).
+
 ## 9. Entity và Repository hoàn chỉnh — mẫu Ngày 2
 
 Các file bên dưới được viết cho package `com.example.sosoi`. Chọn `GenerationType.UUID` để thể hiện rõ chiến lược tạo UUID; `AUTO` trong code ban đầu cũng có thể sử dụng với UUID trên JPA/Hibernate hiện đại. Dùng `@NoArgsConstructor(access = AccessLevel.PROTECTED)` cho JPA, constructor riêng cho field nghiệp vụ, và chỉ thêm setter ở field cần thay đổi.
@@ -825,255 +1016,3 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
 Docs: [Spring — Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/) · [Spring Data JPA — Query Methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
 
-## 10. Hibernate có tự chuyển Entity thành SQL không?
-
-Hibernate đọc metadata JPA và có thể tạo ra DDL tương ứng, tùy cấu hình schema generation. Spring Boot cung cấp auto-configuration và property điều khiển Hibernate.
-
-| Annotation | Ý nghĩa khi tạo schema hoặc ghi dữ liệu |
-|---|---|
-| `@Entity`, `@Table` | Ánh xạ class sang bảng. |
-| `@Id` | Khóa chính. |
-| `@GeneratedValue` | Chiến lược sinh ID; không nhất thiết có DB DEFAULT. |
-| `@Column(nullable = false)` | NOT NULL. |
-| `@Column(unique = true)` | UNIQUE. |
-| `@ManyToOne`, `@JoinColumn` | FK trong trường hợp ánh xạ trên. |
-| `@UniqueConstraint` | UNIQUE trên tổ hợp các cột. |
-| `@Version` | Cột version; Hibernate dùng khi ghi để kiểm tra xung đột. |
-| `@CreationTimestamp`, `@UpdateTimestamp` | Hibernate gán timestamp khi ghi; không mặc nhiên tạo DB trigger. |
-
-### Cấu hình database dành cho môi trường học
-
-`src/main/resources/application.properties` (ví dụ, sửa tên database và biến môi trường theo máy đang dùng):
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/sosoi
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-```
-
-Database `sosoi` phải tồn tại trước, PostgreSQL phải đang chạy và thông tin đăng nhập hợp lệ. Hibernate có thể sinh bảng nhưng cấu hình này không tự tạo PostgreSQL database mới. Không commit password thật. Nếu project dùng YAML, chuyển sang định dạng tương đương và tránh cấu hình trùng.
-
-| `ddl-auto` | Hành vi |
-|---|---|
-| `none` | Không quản lý schema. |
-| `validate` | Kiểm tra mapping/schema; không sửa schema, không thay thế kiểm tra đầy đủ mọi constraint. |
-| `update` | Cố gắng cập nhật schema, không phải công cụ migration hoàn chỉnh. |
-| `create` | Xóa/tạo lại schema do Hibernate quản lý lúc khởi động; mất dữ liệu cũ. |
-| `create-drop` | Tương tự create, còn xóa schema khi đóng ứng dụng. |
-
-PostgreSQL là database không nhúng; mặc định Spring Boot thường dùng `none` nếu không chỉ định. `update` phù hợp cho học tập local, không dùng cho database quan trọng. Khi làm production, quản lý schema bằng Flyway/Liquibase; thường kết hợp Hibernate `validate` hoặc `none`, tùy quy trình triển khai.
-
-### SQL minh họa tương đương
-
-Không cần chạy đoạn dưới nếu Hibernate đang được giao nhiệm vụ tạo schema; đây là mô hình DDL để đọc hiểu. Tên constraint, kiểu dữ liệu và thứ tự lệnh thực tế có thể khác theo version và cấu hình. Ví dụ không bao gồm Tag/TagTicket.
-
-```sql
-CREATE TABLE account (
-    id uuid PRIMARY KEY,
-    username varchar(255) NOT NULL UNIQUE,
-    password_hash varchar(255) NOT NULL
-);
-
-CREATE TABLE profile (
-    id uuid PRIMARY KEY,
-    account_id uuid NOT NULL REFERENCES account(id),
-    first_name varchar(255),
-    last_name varchar(255)
-);
-
-CREATE TABLE ticket (
-    id uuid PRIMARY KEY,
-    profile_id uuid NOT NULL REFERENCES profile(id),
-    eat varchar(255) NOT NULL,
-    drink varchar(255) NOT NULL,
-    short_description varchar(255),
-    feeling smallint NOT NULL,
-    day date NOT NULL,
-    version integer,
-    created_at timestamptz NOT NULL,
-    updated_at timestamptz NOT NULL,
-    CONSTRAINT uk_ticket_profile_day UNIQUE (profile_id, day)
-);
-```
-
-`@Min`/`@Max` được Bean Validation kiểm tra; một số tích hợp có thể bổ sung CHECK lúc sinh schema. Nếu cần đảm bảo phạm vi ngay cả khi dùng SQL trực tiếp, khai báo CHECK một cách tường minh trong migration (`CHECK (feeling BETWEEN 0 AND 5)`). Tương tự, `NOT NULL` không tự ngăn chuỗi rỗng. Không giả định annotation đã xuất hiện trong database nếu chưa kiểm tra schema.
-
-**Keywords:** DDL, DML, Automatic Schema Generation, Database Migration, Flyway, Liquibase, SQL Constraints.
-
-Docs: [Spring Boot — Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html).
-
-## 11. Ví dụ thực tế: một ngày sử dụng Sosoi
-
-### Tình huống
-
-Một Account có 2 Profile: Nguyệt Nhi và Sakura. Nguyệt Nhi tạo nhật ký ngày 16/11/2026:
-
-```json
-{
-  "day": "2026-11-16",
-  "eat": "Cơm gà",
-  "drink": "Trà hoa nhài",
-  "shortDescription": "Hôm nay học Spring Boot",
-  "feeling": 4
-}
-```
-
-Đây là ví dụ JSON request của API sẽ phát triển sau, chưa phải endpoint đang hoạt động. Profile mục tiêu lấy từ ID đã xác thực/quyền truy cập ở server hoặc URL phù hợp.
-
-### Mô phỏng luồng tạo nhật ký bằng Repository
-
-Đoạn sau là mẫu đặt trong một phương thức service/test, đã được inject các repository. Nó không phải class độc lập hoàn chỉnh. Biến `profileId` là UUID của Profile đã tồn tại.
-
-```java
-Profile profile = profileRepository.findById(profileId).orElseThrow();
-
-Ticket ticket = new Ticket(
-    profile,
-    LocalDate.of(2026, 11, 16),
-    "Cơm gà",
-    "Trà hoa nhài",
-    "Hôm nay học Spring Boot",
-    (short) 4
-);
-
-Ticket saved = ticketRepository.saveAndFlush(ticket);
-UUID ticketId = saved.getId();
-```
-
-Khi INSERT, Hibernate sinh UUID, version ban đầu (thường là 0 với mapping số này) và timestamp; PostgreSQL kiểm tra FK, UNIQUE, NOT NULL. `saveAndFlush` được dùng để dễ quan sát SQL trong bài học; không cần gọi cho mọi thao tác trong ứng dụng thật.
-
-### Khi sửa nhật ký
-
-Ví dụ logic cho Service ở ngày tiếp theo (minh họa, chưa xử lý HTTP và xác thực):
-
-```java
-@Transactional
-public void updateFeeling(UUID ticketId, Integer expectedVersion, Short feeling) {
-    Ticket ticket = ticketRepository.findById(ticketId).orElseThrow();
-
-    if (!Objects.equals(ticket.getVersion(), expectedVersion)) {
-        throw new OptimisticLockingFailureException("Ticket đã được cập nhật");
-    }
-
-    ticket.setFeeling(feeling);
-    // Managed Entity: Hibernate dirty checking và flush khi cần.
-    // @Version sẽ kiểm tra tiếp xung đột tại lúc UPDATE.
-}
-```
-
-Imports cần cho snippet: `java.util.Objects`, `java.util.UUID`, `org.springframework.transaction.annotation.Transactional`, `org.springframework.dao.OptimisticLockingFailureException` và `Ticket`. Trong ứng dụng thật, service phải xác minh Account hiện tại có quyền truy cập Ticket; response có thể trả lại version mới sau khi ghi. Không bắt exception rồi tiếp tục dùng cùng transaction đã lỗi.
-
-### Kết quả minh họa (hai thao tác cách nhau 5 phút)
-
-| Field | Sau khi tạo | Sau khi sửa |
-|---|---|---|
-| `id` | T01 | T01 |
-| `profile_id` | P01 | P01 |
-| `day` | 2026-11-16 | 2026-11-16 |
-| `feeling` | 4 | 5 |
-| `version` | 0 | 1 |
-| `created_at` | 2026-11-16T10:00:00Z | 2026-11-16T10:00:00Z |
-| `updated_at` | 2026-11-16T10:00:00Z | 2026-11-16T10:05:00Z |
-
-ID được viết ngắn và timestamp là giá trị giả định để dễ hình dung; không phải kết quả test thực tế.
-
-Nếu Nguyệt Nhi bấm tạo lần thứ hai trong cùng ngày: UNIQUE tổ hợp chặn. Nếu Sakura tạo cùng ngày: hợp lệ vì khác Profile. Nếu hai thiết bị cùng sửa T01 với version 0: chỉ một thao tác ghi dựa trên version 0 thành công; thao tác còn lại phải xử lý conflict.
-
-### Hình dung kiến trúc API khi phát triển tiếp
-
-```mermaid
-flowchart LR
-    A[Frontend] --> B[TicketController]
-    B --> C[TicketService]
-    C --> D[TicketRepository]
-    D --> E[Hibernate]
-    E --> F[(PostgreSQL)]
-```
-
-Controller nhận DTO, validate request; Service kiểm tra quyền, nghiệp vụ và quản lý transaction; Repository thao tác dữ liệu; database bảo vệ constraint. Không gửi `passwordHash` hoặc cả cây Entity trực tiếp ra API.
-
-## 12. Tự kiểm tra Ngày 2
-
-### Chạy ứng dụng
-
-```bash
-./mvnw -v
-./mvnw clean compile
-./mvnw spring-boot:run
-```
-
-Sau khi kết nối PostgreSQL thành công, mở DBeaver và refresh schema. Có thể kiểm tra constraint của 3 bảng bằng truy vấn sau (giả định schema `public`):
-
-```sql
-SELECT conrelid::regclass AS table_name,
-       conname AS constraint_name,
-       pg_get_constraintdef(oid) AS definition
-FROM pg_constraint
-WHERE conrelid IN (
-    'public.account'::regclass,
-    'public.profile'::regclass,
-    'public.ticket'::regclass
-)
-ORDER BY table_name, constraint_name;
-```
-
-Truy vấn đọc dữ liệu Ticket sau khi có bản ghi:
-
-```sql
-SELECT id, profile_id, day, feeling, version, created_at, updated_at
-FROM ticket
-ORDER BY created_at DESC;
-```
-
-### Các bài kiểm tra cần thực hiện
-
-| Test case | Kết quả mong đợi |
-|---|---|
-| Tạo Account với username hợp lệ (hash mật khẩu đã được tạo) | Thành công. |
-| Tạo Account khác trùng username | Database từ chối. |
-| Lưu Entity với username chỉ gồm khoảng trắng qua JPA validation | Bị từ chối. |
-| Tạo nhiều Profile cho cùng Account | Thành công. |
-| Tạo Profile thiếu Account | Bị từ chối. |
-| Cùng Profile, hai Ticket khác ngày | Thành công. |
-| Hai Profile, cùng ngày | Thành công. |
-| Cùng Profile và ngày | Database từ chối. |
-| `feeling = 6` qua JPA validation | Bị từ chối. |
-| Tạo Ticket | UUID, version và timestamp được sinh. |
-| Thay đổi Ticket, flush/commit và đọc lại | Version tăng, updatedAt thay đổi, createdAt giữ nguyên. |
-| Hai transaction độc lập cùng đọc rồi sửa một Ticket | Transaction cập nhật stale version bị lỗi. |
-| Hai transaction cùng tạo một Profile/ngày | Chỉ một bản ghi trùng tổ hợp có thể commit. |
-
-Để kiểm tra concurrency, cần hai transaction độc lập với thứ tự đọc/ghi được kiểm soát, không chỉ gọi `save()` hai lần tuần tự trong cùng transaction. Với tích hợp PostgreSQL, có thể học thêm Testcontainers ở ngày sau. `BUILD SUCCESS` chỉ chứng minh code đã compile; không chứng minh mọi quy tắc database đã đúng.
-
-## 13. Bảng tra cứu annotation nhanh
-
-| Nhóm | Annotation chính |
-|---|---|
-| Entity Mapping | `@Entity`, `@Table`, `@Id`, `@GeneratedValue`, `@Column` |
-| Entity Relationship | `@ManyToOne`, `@OneToMany`, `@JoinColumn` |
-| Bean Validation | `@NotBlank`, `@NotNull`, `@Size`, `@Min`, `@Max`, `@Pattern` |
-| Database Constraints | `@Column(unique = true)`, `@UniqueConstraint` |
-| Timestamp Generation | `@CreationTimestamp`, `@UpdateTimestamp` |
-| Lifecycle Callbacks | `@PrePersist`, `@PreUpdate` |
-| Auditing | `@CreatedDate`, `@LastModifiedDate`, `@CreatedBy`, `@LastModifiedBy` |
-| Optimistic Locking | `@Version` |
-| Reuse Mapping | `@MappedSuperclass` |
-| Lombok | `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor` |
-
-### Tài liệu tham khảo chính thức
-
-- [Spring Boot — Structuring Your Code](https://docs.spring.io/spring-boot/reference/using/structuring-your-code.html)
-- [Spring — Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-- [Spring Boot — Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
-- [Hibernate ORM — User Guide](https://docs.hibernate.org/stable/core/userguide/html_single/)
-- [Jakarta Persistence 3.2 — Specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html)
-- [Jakarta Validation — Constraints](https://jakarta.ee/specifications/platform/11/apidocs/jakarta.validation/constraints/package-summary)
-- [Spring Data JPA — Auditing](https://docs.spring.io/spring-data/jpa/reference/auditing.html)
-- [Lombok — Maven Setup](https://projectlombok.org/setup/maven)
-- [PostgreSQL — Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
-
-> Ghi nhớ: Entity mô tả dữ liệu; Repository cung cấp thao tác lưu trữ; Hibernate chuyển mapping và thao tác Entity thành SQL; PostgreSQL thực thi và bảo vệ tính toàn vẹn dữ liệu. Service sẽ là nơi xử lý nghiệp vụ của ứng dụng.

@@ -1,11 +1,14 @@
 # Lộ trình Sổ Sói
 
+Danh mục các lộ trình học: [INDEX.md](../career/INDEX.md).
+
 App nhật ký nhỏ: mỗi ngày một **tờ** (ăn gì, uống gì, tâm trạng, một câu ngắn), gắn **thẻ**, xem lại và lọc. Đánh dấu `[x]` khi xong việc.
 
 ## Luật chơi
 
 - Tối thiểu **30 phút code tay mỗi ngày**. Hứng thì làm thêm. Một "ngày" trong lộ trình có thể kéo dài hai, ba buổi, không sao.
-- Không để AI viết code. Được đọc docs và Google.
+- Không để AI viết code, trừ UI frontend ở Phần 2 theo luật (b) trong [ai-agents.md](../career/roadmaps/ai-agents.md). Được đọc docs và Google.
+- Trọng tâm là hiểu **vì sao**. Quên cú pháp thì tra docs, không cần thuộc.
 - Bí quá 30 phút: được hỏi AI, nhưng chỉ hỏi khái niệm, không xin code.
 - Làm xong mới nhờ review.
 - Gõ tay, không copy-paste. Mỗi buổi commit ít nhất một lần.
@@ -20,6 +23,9 @@ Mục tiêu: đọc hiểu file của thợ, và tự viết handoff cho thợ �
 - **Mỗi tuần một lần**: lấy một file report thật của thợ, đọc, rồi tóm lại 5 dòng bằng lời của mình. Gia sư so với bản gốc.
 - Markdown học dần qua chính mấy file này: heading, list, bảng, code block, link, `<details>`, Mermaid.
 - Gia sư review cả note: chỗ nào khó hiểu, sai ngữ pháp, câu nào nói ngắn hơn được.
+- Soát 4 luật dạng động từ trước khi gửi note (xem [english.md](../career/roadmaps/english.md)).
+- Từ tuần 2, mỗi tuần quay 3-5 phút nói tiếng Anh về phần vừa làm.
+- Thỉnh thoảng đọc một postmortem thay cho report của thợ.
 
 ### Terminal thay cho GUI
 
@@ -28,7 +34,7 @@ Mục tiêu: đọc hiểu file của thợ, và tự viết handoff cho thợ �
   - Docker: `docker compose up -d`, `ps`, `logs -f`, `exec`, `down`
   - Postgres: `psql`, `\dt`, `\d`, `\q`
   - API: `curl` (kèm `-i` để xem status, `-H` để gửi header, `-d` để gửi body)
-- Gặp lệnh mới thì tự ghi vào `docs/notes/terminal.md`: lệnh, nó làm gì, một ví dụ. Sổ tay của chính Lang, không chép của ai.
+- Gặp lệnh mới thì tự ghi vào `docs/notes/terminal.md`: lệnh, nó làm gì, một ví dụ. Sổ tay của chính anh, không chép của ai.
 - Lỗi thì đọc thông báo lỗi trong terminal trước, rồi mới hỏi.
 
 Docs:
@@ -38,7 +44,7 @@ Docs:
 
 ## Yêu cầu
 
-App làm được những việc này. Thiết kế dữ liệu thế nào là bài của Lang.
+App làm được những việc này. Thiết kế dữ liệu thế nào là bài của anh.
 
 - Mỗi ngày ghi một **tờ**: hôm đó ăn gì, uống gì, tâm trạng, một câu ngắn.
 - Mỗi profile chỉ có **một** tờ cho một ngày.
@@ -48,7 +54,7 @@ App làm được những việc này. Thiết kế dữ liệu thế nào là b
 - Ví dụ:
 ```
   Ngày:       13/11
-  Ăn:         (Lang ăn gì thì điền)
+  Ăn:         (anh ăn gì thì điền)
   Uống:       cà phê sữa tươi
   Tâm trạng:  ★★★★☆  (4)
   Một câu:    Nghỉ làm, giặt cả thau đồ, bị nha sĩ khám lưỡi.
@@ -56,6 +62,13 @@ App làm được những việc này. Thiết kế dữ liệu thế nào là b
 ```
 
 #### Ngày 0: Tự thiết kế dữ liệu
+
+**Cần biết trước**
+
+- Mỗi ô chỉ chứa một giá trị (atomic value): [00 §2](docs/refs/00-data-modeling.md#2-một-ô-chỉ-chứa-một-giá-trị-atomic-value)
+- Kiểu dữ liệu: text, số, ngày, uuid: [00 §3](docs/refs/00-data-modeling.md#3-kiểu-dữ-liệu)
+- PK, FK, NOT NULL, UNIQUE nghĩa là gì: [00 §4](docs/refs/00-data-modeling.md#4-ràng-buộc-constraint)
+- Đọc ký hiệu Mermaid `erDiagram`: [00 §6](docs/refs/00-data-modeling.md#6-mermaid-erdiagram)
 
 - [x] Vẽ sơ đồ ER bằng Mermaid (`erDiagram`) trong `docs/notes/data-model.md`: có những bảng nào, mỗi bảng có cột gì, kiểu gì, quan hệ ra sao
 - [x] Ghi bằng tiếng Anh vài dòng: vì sao chọn vậy, chỗ nào còn phân vân
@@ -73,6 +86,13 @@ Docs:
 
 #### Ngày 1: Khởi tạo
 
+**Cần biết trước**
+
+- Class, object, annotation, `@GetMapping` là gì: [10 §1](docs/refs/10-java-http-basics.md#1-java)
+- Spring Boot khởi động và nhận request thế nào: [01 §1](docs/refs/01-spring-boot-basics.md#1-spring-boot-chạy-thế-nào)
+- Request, JSON, status code, `curl -i`: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- Docker Compose, volume, vào `psql`: [09 (cả file)](docs/refs/09-terminal-docker-sql.md)
+
 - [x] `git init` ngay từ đầu, commit đầu tiên chỉ có project rỗng
 - [x] Tạo project trên start.spring.io (Java 21, Maven, Spring Web, Spring Data JPA, PostgreSQL Driver, Validation)
 - [x] Chạy Postgres bằng `docker-compose.yml` (chưa có app), có **volume** để tắt container không mất dữ liệu
@@ -89,11 +109,18 @@ Docs:
 
 #### Ngày 2: Entity Account, Profile, Ticket
 
+**Cần biết trước**
+
+- PK, FK, NOT NULL, kiểu cột: [00 §4](docs/refs/00-data-modeling.md#4-ràng-buộc-constraint)
+- `psql`: `\dt`, `\d <bảng>`: [09 §2](docs/refs/09-terminal-docker-sql.md#2-psql)
+- `INSERT ... RETURNING` và thứ tự bảng cha trước: [09 §3](docs/refs/09-terminal-docker-sql.md#3-sql-cơ-bản)
+- Hibernate chỉ tạo bảng khi app chạy (`ddl-auto`): [02 §10](docs/refs/02-jpa-persistence.md#10-hibernate-có-tự-chuyển-entity-thành-sql-không)
+
 - [x] Entity `Account`, `Profile`, `Ticket` theo sơ đồ Ngày 0 (chưa có `Tag`), cùng Repository
 - [x] `Profile` → `Account` và `Ticket` → `Profile` bằng `@ManyToOne`, bên giữ FK là bên "nhiều"
 - [x] `created_at`, `updated_at` tự gán khi lưu và khi sửa
-- [ ] Chưa có đăng ký: tự `INSERT` một account và một profile bằng tay trong `psql` để có `profile_id` mà dùng
-- [x] Trước khi code: chốt `feeling` là chữ hay số 1 tới 5. Sơ đồ đang là `string`, yêu cầu ghi 1 tới 5; Ngày 4, 6, 9 cần số
+- [x] Chưa có đăng ký: tự `INSERT` một account và một profile bằng tay trong `psql` để có `profile_id` mà dùng
+- [x] Trước khi code: chốt `feeling` là chữ hay số 0 tới 5. Sơ đồ đang là `string`, yêu cầu ghi 0 tới 5; Ngày 4, 6, 9 cần số
 
 Docs:
 
@@ -101,7 +128,14 @@ Docs:
 
 #### Ngày 3: CRUD theo tầng
 
-- [ ] Tách Controller, Service, Repository
+**Cần biết trước**
+
+- Controller, Service, Repository làm việc gì: [03 §1](docs/refs/03-layers-dto.md#1-ba-tầng)
+- Method và status REST: `POST` trả 201, `DELETE` trả 204: [03 §3](docs/refs/03-layers-dto.md#3-quy-ước-rest-cơ-bản)
+- Interface, `Optional`, `record`: [10 §1](docs/refs/10-java-http-basics.md#1-java)
+- Thử API bằng `curl -X`, `-H`, `-d`: [10 §3](docs/refs/10-java-http-basics.md#3-curl)
+
+- [x] Tách Controller, Service, Repository
 - [ ] 5 endpoint: `GET /tickets`, `GET /tickets/{id}`, `POST /tickets`, `PUT /tickets/{id}`, `DELETE /tickets/{id}`
 - [ ] Tạm thời mọi tờ gắn với profile tạo tay ở Ngày 2
 - [ ] DTO `TicketRequest` và `TicketResponse` bằng `record`, không trả Entity ra ngoài
@@ -113,6 +147,13 @@ Docs:
 
 #### Ngày 4: Validation và lỗi
 
+**Cần biết trước**
+
+- Exception: `throw`, `try/catch`, unchecked: [10 §1](docs/refs/10-java-http-basics.md#1-java)
+- Status 400 và 404 khác nhau thế nào: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- Validation là gì, khác ràng buộc database: [04 §1](docs/refs/04-validation-errors.md#1-validation)
+- Ràng buộc ở Entity và database: [02 §5](docs/refs/02-jpa-persistence.md#5-validation-và-database-constraints)
+
 - [ ] `feeling` hợp lệ (theo cách đã chốt ở Ngày 2), `short_description` tối đa 280 ký tự, `day` không được ở tương lai
 - [ ] `GlobalExceptionHandler` với `@RestControllerAdvice`
 - [ ] 404 khi không thấy, 400 kèm danh sách lỗi khi dữ liệu sai
@@ -123,6 +164,13 @@ Docs:
 - [Error Handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
 
 #### Ngày 5: Một ngày một tờ
+
+**Cần biết trước**
+
+- Constraint `UNIQUE` và khoá tổ hợp ở mức database: [00 §4](docs/refs/00-data-modeling.md#4-ràng-buộc-constraint)
+- Đọc lỗi `duplicate key` từ Postgres: [09 §4](docs/refs/09-terminal-docker-sql.md#4-lỗi-hay-gặp)
+- Status 409 Conflict nghĩa là gì: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- `BEGIN` / `ROLLBACK` để thử an toàn: [09 §3](docs/refs/09-terminal-docker-sql.md#3-sql-cơ-bản)
 
 - [ ] `UNIQUE (profile_id, day)` cho `Ticket`
 - [ ] Tạo trùng ngày thì trả **409 Conflict**, không để lộ lỗi SQL ra ngoài
@@ -139,6 +187,12 @@ Docs:
 
 #### Ngày 6: Phân trang, lọc theo khoảng ngày
 
+**Cần biết trước**
+
+- Query param khác path variable: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- `SELECT ... WHERE ... ORDER BY ... LIMIT`: [09 §3](docs/refs/09-terminal-docker-sql.md#3-sql-cơ-bản)
+- Xem index của bảng bằng `\d`: [09 §2](docs/refs/09-terminal-docker-sql.md#2-psql)
+
 - [ ] `GET /tickets?from=2026-11-01&to=2026-11-30&page=0&size=10&sort=day,desc`
 - [ ] Lọc tâm trạng tối thiểu: `?minFeeling=4` (nếu `feeling` là số)
 - [ ] Trả DTO phân trang riêng, không trả thẳng `Page` của Spring
@@ -152,6 +206,10 @@ Docs:
 
 #### Ngày 7: Ôn tập
 
+**Cần biết trước**
+
+- Ôn lại các file của Ngày 1–6: [README.md](docs/refs/README.md)
+
 - [ ] Project nháp mới, viết lại ngày 1–4 không nhìn code cũ
 - [ ] Ghi chỗ nào còn phải tra
 - [ ] Nhờ review cả tuần
@@ -159,6 +217,13 @@ Docs:
 ### Tuần 2: Thẻ, đăng nhập, production-ready
 
 #### Ngày 8: Thẻ và quan hệ nhiều-nhiều
+
+**Cần biết trước**
+
+- Quan hệ một-nhiều, owning side, `@ManyToOne`: [05 §2](docs/refs/05-pagination-relations.md#2-quan-hệ-giữa-bảng)
+- Bảng nối `tag_ticket` trong sơ đồ Sổ Sói: [00 §ví dụ](docs/refs/00-data-modeling.md#mẫu-sơ-đồ-cho-sổ-sói)
+- Lazy loading: dữ liệu liên quan tải khi gọi tới: [05 §2](docs/refs/05-pagination-relations.md#2-quan-hệ-giữa-bảng)
+- Bật `show-sql` để đếm câu SQL: [02 §10](docs/refs/02-jpa-persistence.md#10-hibernate-có-tự-chuyển-entity-thành-sql-không)
 
 - [ ] Entity `Tag` thuộc về `Profile` (`@ManyToOne`), `UNIQUE (profile_id, name)`
 - [ ] `Ticket` N-N `Tag` qua bảng `tag_ticket`: `@ManyToMany` + `@JoinTable`
@@ -173,6 +238,12 @@ Docs:
 
 #### Ngày 9: Thống kê
 
+**Cần biết trước**
+
+- `JOIN`, `GROUP BY`, `COUNT`, `AVG` trong SQL: [09 §3](docs/refs/09-terminal-docker-sql.md#3-sql-cơ-bản)
+- Query param `from`, `to`: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- Cú pháp JPQL trong `@Query`: [05 §3](docs/refs/05-pagination-relations.md#3-lỗi-n1)
+
 - [ ] `GET /stats?from=&to=`: số tờ, tâm trạng trung bình, top 5 thẻ dùng nhiều nhất
 - [ ] Viết câu SQL thống kê **bằng tay trong `psql` trước** (`GROUP BY`, `JOIN`, `AVG`, `ORDER BY ... LIMIT`), chạy ra đúng rồi mới chuyển sang code
 - [ ] Viết bằng `@Query` JPQL, không lấy hết về rồi đếm bằng Java
@@ -182,6 +253,13 @@ Docs:
 - [Spring Data JPA @Query](https://www.baeldung.com/spring-data-jpa-query)
 
 #### Ngày 10: Đăng ký, BCrypt
+
+**Cần biết trước**
+
+- Spring Security: Filter, `SecurityFilterChain`: [06 §1](docs/refs/06-security-jwt.md#1-spring-security-hoạt-động-thế-nào)
+- BCrypt, salt, `matches`: [06 §2](docs/refs/06-security-jwt.md#2-mã-hoá-mật-khẩu-bằng-bcrypt)
+- Nhiều thao tác cùng thành công hoặc cùng huỷ (transaction): [09 §3](docs/refs/09-terminal-docker-sql.md#3-sql-cơ-bản)
+- Gửi body JSON và đọc status 409 bằng `curl`: [10 §3](docs/refs/10-java-http-basics.md#3-curl)
 
 - [ ] `POST /auth/register`: tạo `Account` cùng profile đầu tiên, trong **một transaction**
 - [ ] Mã hoá mật khẩu bằng BCrypt, lưu vào `password_hash`
@@ -196,6 +274,13 @@ Docs:
 
 #### Ngày 11: JWT và "sổ của ai người nấy thấy"
 
+**Cần biết trước**
+
+- Authentication khác Authorization: [06 §1](docs/refs/06-security-jwt.md#1-spring-security-hoạt-động-thế-nào)
+- JWT: ba phần, claim, luồng đăng nhập: [06 §3](docs/refs/06-security-jwt.md#3-jwt)
+- Header `Authorization: Bearer <token>`: [10 §2](docs/refs/10-java-http-basics.md#2-http)
+- Gửi header bằng `curl -H`: [10 §3](docs/refs/10-java-http-basics.md#3-curl)
+
 - [ ] `POST /auth/login` trả access token (token mang `account_id`)
 - [ ] Chốt trước khi code: request đang làm cho profile nào? Ví dụ đường dẫn `/profiles/{profileId}/tickets`, hoặc header riêng. Ghi lý do vào note
 - [ ] Mọi endpoint tờ, thẻ, thống kê cần token
@@ -208,6 +293,13 @@ Docs:
 
 #### Ngày 12: Test
 
+**Cần biết trước**
+
+- Mock, `@InjectMocks`, Given-When-Then: [07 §1](docs/refs/07-testing.md#1-unit-test-với-mockito)
+- `@WebMvcTest`, MockMvc, Testcontainers: [07 §2](docs/refs/07-testing.md#2-integration-test)
+- Testcontainers cần Docker đang chạy: [09 §1](docs/refs/09-terminal-docker-sql.md#1-docker-compose)
+- Exception và `Optional` trong Java: [10 §1](docs/refs/10-java-http-basics.md#1-java)
+
 - [ ] Unit test `TicketService` với JUnit 5 và Mockito, có ca trùng ngày
 - [ ] `@WebMvcTest` cho controller: 400, 404, 409
 - [ ] Một test `@SpringBootTest` với Testcontainers: đăng ký, đăng nhập, tạo tờ, lấy lại
@@ -219,6 +311,13 @@ Docs:
 
 #### Ngày 13: Flyway, profile cấu hình, logging
 
+**Cần biết trước**
+
+- Flyway: file `V1__init.sql`, không sửa file đã chạy: [08 §1](docs/refs/08-flyway-docker.md#1-flyway)
+- Spring profile khác bảng `profile`: [08 §2](docs/refs/08-flyway-docker.md#2-profile-cấu-hình)
+- Kiểu dữ liệu và constraint để tự viết `CREATE TABLE`: [00 §3](docs/refs/00-data-modeling.md#3-kiểu-dữ-liệu)
+- `ddl-auto` là gì: `update` khác `validate`: [02 §10](docs/refs/02-jpa-persistence.md#10-hibernate-có-tự-chuyển-entity-thành-sql-không)
+
 - [ ] Schema sang `V1__init.sql` (tự viết `CREATE TABLE` cho 5 bảng theo sơ đồ Ngày 0, kèm `NOT NULL`, FK, unique), `ddl-auto: validate`
 - [ ] `application-dev.yml`, `application-prod.yml` (đây là *Spring profile*, khác bảng `profile` của mình)
 - [ ] Không log mật khẩu, token hay nội dung `short_description`
@@ -229,6 +328,13 @@ Docs:
 - [Profiles](https://docs.spring.io/spring-boot/reference/features/profiles.html)
 
 #### Ngày 14: Docker và tài liệu API
+
+**Cần biết trước**
+
+- Image, container, Dockerfile: [08 §4](docs/refs/08-flyway-docker.md#4-docker)
+- Docker Compose, `healthcheck`, thứ tự khởi động: [08 §5](docs/refs/08-flyway-docker.md#5-docker-compose)
+- Volume và `docker compose` cơ bản: [09 §1](docs/refs/09-terminal-docker-sql.md#1-docker-compose)
+- Endpoint, method, status để viết README: [10 §2](docs/refs/10-java-http-basics.md#2-http)
 
 - [ ] `Dockerfile` **multi-stage**: một stage build bằng Maven, một stage chỉ chạy `.jar`, chạy bằng user thường không phải root
 - [ ] Thêm app vào `docker-compose.yml`, `healthcheck` cho Postgres, app chỉ khởi động khi database sẵn sàng
@@ -245,7 +351,9 @@ Docs:
 
 ## Phần 2: Frontend (10 ngày, soạn chi tiết khi xong Phần 1)
 
-Code trong folder `web/`. Framework chưa chốt: Vite + React, Next.js hoặc Vue. Quyết trước Ngày 15; các mục dưới đây giữ nguyên ý, đổi tên công cụ theo framework đã chọn.
+Code trong folder `web/`. Framework đã chốt là **Next.js**; các mục dưới đây giữ nguyên ý, đổi tên công cụ cho khớp Next.js khi soạn chi tiết.
+
+UI (component, form, layout) agent viết trên branch riêng, anh review diff. Gọi API, token, CORS, fetch server/client thì code tay.
 
 - [ ] Ngày 15: Tạo project, hiểu component, props, state
 - [ ] Ngày 16: Trang đăng nhập, lưu token, gọi API có `Authorization`
@@ -265,3 +373,15 @@ Docs:
 - [Next.js: Docs](https://nextjs.org/docs)
 - [Vue: Guide](https://vuejs.org/guide/introduction.html)
 - [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
+
+## Phần 3: Ra mắt (khoảng 3 ngày, soạn chi tiết sau)
+
+- [ ] Ngày 25: CI bằng GitHub Actions (build và test mỗi lần push)
+- [ ] Ngày 26: Deploy thật, có link (nơi deploy: quyết sau)
+- [ ] Ngày 27: README kiểu portfolio (ảnh, sơ đồ kiến trúc, cách chạy, quyết định kỹ thuật)
+
+Sau Sổ Sói: project 2, app todo đồng bộ Gmail/Redmine, xem [fullstack.md](../career/roadmaps/fullstack.md).
+
+Docs:
+
+- [GitHub Actions: Quickstart](https://docs.github.com/en/actions/writing-workflows/quickstart)

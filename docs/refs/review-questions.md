@@ -162,7 +162,7 @@ Docs: [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/
 - Spring đưa object cho **Jackson** (thư viện có sẵn trong `spring-boot-starter-webmvc`). Jackson đọc các field của record (`status`) và viết ra `{"status":"..."}`, kèm header `Content-Type: application/json`.
 - Tên field trong record chính là key trong JSON. Đổi `status` thành `state` là client nhận key khác.
 
-Ví dụ đời thường: Lang viết thư bằng tiếng Việt (object Java), bưu điện (Jackson) dịch sang mẫu chung (JSON) để người nhận ở nước nào cũng đọc được.
+Ví dụ đời thường: anh viết thư bằng tiếng Việt (object Java), bưu điện (Jackson) dịch sang mẫu chung (JSON) để người nhận ở nước nào cũng đọc được.
 
 ```mermaid
 sequenceDiagram
